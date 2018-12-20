@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <title>Survey Page</title>
 
-  <!-- Latest compiled and minified CSS & JS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script type = "text/javascript" src = "/assets/style.js"></script>
   <script src="https://code.jquery.com/jquery.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
@@ -223,6 +223,7 @@
 	      </div>
 	      <div class="modal-body">
 	        <h2 id="matchName"></h2>
+            <img id="matchPhoto" src="" alt="No Image" width = 250px>
             
 	      </div>
 	      <div class="modal-footer">
@@ -232,7 +233,7 @@
 
 	  </div>
     </div>
-
+    <script src = "/assets/style.js"></script>
 </body>
 
 </html>
@@ -247,32 +248,34 @@
 		var isValid = true;
 		$(".form-control").each(function() {
 		    if ( $(this).val() === "" )
-		        isValid = false;
+                isValid = false;
         });
         
 	    $(".chosen-select").each(function() {
 		    if( $(this).val() === "")
-			    isValid = false
+                isValid = false
 		});
 		return isValid;
 	}
 
-    if (validateForm){
+    if (validateForm()){
         var newPerson = {
             name: $("#userName").val().trim(),
             photo: $("#userPhoto").val().trim(),
             scores: [ $("#q1").val(), $("#q2").val(), $("#q3").val(), $("#q4").val(), $("#q5").val(), $("#q6").val(), $("#q7").val(), $("#q8").val(), $("#q9").val(), $("#q10").val()]
         }
         console.log(newPerson);
+    
+        $.post("/api/friends", newPerson, function(data) {
+            //Shows best match
+            $("#matchName").text(data.name);
+	        $("#matchPhoto").attr("src", data.photo);
+            $("#resultsModal").modal("toggle");
+        });
     }
-
-    $.post("/api/friends", newPerson, function(data) {
-        //Shows best match
-        $("#matchName").text(data.name);
-	    $("#matchPhoto").attr("src", data.photo);
-		$("#resultsModal").modal("toggle");
-
-      });
+    else{
+        alert("Please fill out the entire survey");
+    }
 
   });
 
